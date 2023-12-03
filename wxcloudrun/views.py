@@ -1,10 +1,10 @@
 from datetime import datetime
-from flask import render_template, request
+from flask import render_template, request, jsonify
 from run import app
 from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter, update_counterbyid
 from wxcloudrun.model import Counters
 from wxcloudrun.response import make_succ_empty_response, make_succ_response, make_err_response
-
+import config
 
 @app.route('/')
 def index():
@@ -13,14 +13,11 @@ def index():
     """
     return render_template('index.html')
 
-# Replace these values with your Alibaba Cloud OSS credentials
-OSS_ACCESS_KEY_ID = 'your_access_key_id'
-OSS_ACCESS_KEY_SECRET = 'your_access_key_secret'
-OSS_ENDPOINT = 'http://your-endpoint.com'
-OSS_BUCKET_NAME = 'your-bucket-name'
+# Initialize OSS authentication
+auth = oss2.Auth(app.config['OSS_ACCESS_KEY_ID'], app.config['OSS_ACCESS_KEY_SECRET'])
 
-auth = oss2.Auth(OSS_ACCESS_KEY_ID, OSS_ACCESS_KEY_SECRET)
-bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET_NAME)
+# Initialize OSS bucket
+bucket = oss2.Bucket(auth, app.config['OSS_ENDPOINT'], app.config['OSS_BUCKET_NAME'])
 
 
 @app.route('/upload', methods=['POST'])
