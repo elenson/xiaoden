@@ -13,22 +13,31 @@ def index():
     """
     return render_template('index.html')
 
-UPLOAD_FOLDER = 'uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# Replace these values with your Alibaba Cloud OSS credentials
+OSS_ACCESS_KEY_ID = 'your_access_key_id'
+OSS_ACCESS_KEY_SECRET = 'your_access_key_secret'
+OSS_ENDPOINT = 'http://your-endpoint.com'
+OSS_BUCKET_NAME = 'your-bucket-name'
 
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
-    
-@app.route('/api/upload', methods=['POST'])
+auth = oss2.Auth(OSS_ACCESS_KEY_ID, OSS_ACCESS_KEY_SECRET)
+bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET_NAME)
+
+
+@app.route('/upload', methods=['POST'])
 def upload_file():
     try:
         file = request.files['file']
         if file:
-            # Save the file to the server
-            filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-            file.save(filename)
+            # Read file content directly
+            file_content = file.read()
 
-            return jsonify({'success': True, 'message': 'File uploaded successfully'})
+            # Upload the file content to Alibaba Cloud OSS
+            object_key = f"uploads/{file.filename}"
+            bucket.put_object(object_key, file_content)
+
+            # Return the OSS URL for the uploaded file
+            oss_url = f"https://{OSS_BUCKET_NAME}.{OSS_ENDPOINT}/{object_key}"
+            return jsonify({'success': True, 'message': 'File uploaded successfully', 'oss_url': oss_url})
         else:
             return jsonify({'success': False, 'message': 'No file received'})
     except Exception as e:
