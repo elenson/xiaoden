@@ -14,6 +14,12 @@ app.config['DEBUG'] = config.DEBUG
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{}:{}@{}/flask_demo'.format(config.username, config.password,
                                                                              config.db_address)
 
+# 配置阿里云OSS
+app.config['OSS_ACCESS_KEY_ID'] = config.oss_access_key_id
+app.config['OSS_ACCESS_KEY_SECRET'] = config.oss_access_key_secret
+app.config['OSS_ENDPOINT'] = config.oss_endpoint
+app.config['OSS_BUCKET_NAME'] = config.oss_bucket_name
+
 # 初始化DB操作对象
 db = SQLAlchemy(app)
 
