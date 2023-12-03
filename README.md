@@ -1,6 +1,4 @@
 ## Dockerfile最佳实践
-请参考[如何提高项目构建效率](https://developers.weixin.qq.com/miniprogram/dev/wxcloudrun/src/scene/build/speed.html)
-
 ## 目录结构说明
 
 ~~~
