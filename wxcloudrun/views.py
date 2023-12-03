@@ -13,7 +13,27 @@ def index():
     """
     return render_template('index.html')
 
+UPLOAD_FOLDER = 'uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+    
+@app.route('/api/upload', methods=['POST'])
+def upload_file():
+    try:
+        file = request.files['file']
+        if file:
+            # Save the file to the server
+            filename = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(filename)
+
+            return jsonify({'success': True, 'message': 'File uploaded successfully'})
+        else:
+            return jsonify({'success': False, 'message': 'No file received'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
+        
 @app.route('/api/count', methods=['POST'])
 def count():
     """
